@@ -1,0 +1,131 @@
+{% extends "main/layout.html" %}
+{% block content %}
+<div class="cart">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 mt-5">
+                <h3 class="text-center">Active Orders</h3>
+                {% if items %}
+                <h4 class="text-center">Total Bill Amount: {{total}} for {{ count }} boxes.</h4>
+                <div class="table-responsive">
+                    <table class="table table-light">
+                        <thead>
+                        <tr>
+                            <th scope="col">Ordered</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Specification</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Total Pieces</th>
+                            <th scope="col">Order Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for item_active in items %}
+                        <tr>
+                            <td>{{ item_active.ordered_date }}</td>
+                            <td>{{ item_active.item.title }} <span class="badge badge-{{ item_active.item.label_colour }}">{{ item_active.item.labels }}</span></td>
+                            <td>{{ item_active.item.description }}</td>
+                            <td>{{ item_active.item.instructions }}</td>
+                            <td>{{ item_active.item.price }}</td>
+                            <td>{{ item_active.item.pieces }} pieces</td>
+                            <td>{{ item_active.status }}</td>
+                        </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <br><br><h4 class="text-center">Please pay either via PayPal or at time of delivery!</h4>
+
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12 mt-5">
+                {% if cart_items %}
+                <div class="table-responsive">
+                    <table class="table table-light">
+                        <thead>
+                        <tr>
+                            <th scope="col">Ordered</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Specification</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Total Pieces</th>
+                            <th scope="col">Order Status</th>
+                            <th scope="col">Delivery Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for cart in cart_items %}
+                        <tr>
+                            <td>{{ cart.ordered_date }}</td>
+                            <td>{{ cart.item.title }} <span class="badge badge-{{ cart.item.label_colour }}">{{ cart.item.labels }}</span></td>
+                            <td>{{ cart.item.description }}</td>
+                            <td>{{ cart.item.instructions }}</td>
+                            <td>{{ cart.item.price }}</td>
+                            <td>{{ cart.item.pieces }} pieces</td>
+                            <td>{{ cart.status }}</td>
+                            <td>{{ cart.delivery_date }}</td>
+                        </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+    <div class = "row justify-content-center">
+        <div class = "col-md-6 text-center">
+            <div id ="paypal-button"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+<script>
+paypal.Button.render({
+// Configure environment
+env: 'sandbox',
+client: {
+  sandbox: 'demo_sandbox_client_id',
+  production: 'demo_production_client_id'
+},
+// Customize button (optional)
+locale: 'en_US',
+style: {
+  size: 'large',
+  color: 'blue',
+  shape: 'rect',
+},
+
+// Enable Pay Now checkout flow (optional)
+commit: true,
+
+// Set up a payment
+payment: function(data, actions) {
+  return actions.payment.create({
+    transactions: [{
+      amount: {
+        total: '0.01',
+        currency: 'USD'
+      }
+    }]
+  });
+},
+// Execute the payment
+onAuthorize: function(data, actions) {
+  return actions.payment.execute().then(function() {
+    // Show a confirmation message to the buyer
+    window.alert('Thank you for your purchase!');
+  });
+}
+}, '#paypal-button');
+
+</script>
+{% endblock content %}
